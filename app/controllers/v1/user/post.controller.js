@@ -8,16 +8,16 @@ exports.create = async (req, res, next) => {
         const validationResults = createPostValidator(req.body);
         if (validationResults !== true) return next({ status: 422, message: validationResults });
 
-        const { title, description, body, cover, status, topicID } = req.body;
+        const { title, description, body, cover } = req.body;
 
-        const createPost = await PostModel.create({
+        await PostModel.create({
             title,
             description,
             body,
             cover,
-            status,
-            topicID,
+            status: "published",
             author: req.user._id,
+            topicID: "651fe55776acc37bc392951d",
         });
 
         res.status(201).json({ status: "ok", message: `پست ${title} با موفقیت ایجاد شد.` });
@@ -70,7 +70,7 @@ exports.getOne = async (req, res, next) => {
         const { id } = req.params;
         checkExist(id, next);
 
-        const post = await PostModel.findOne({ _id: id, status: "published" }, "-__v").lean();
+        const post = await PostModel.findOne({ _id: id, status: "published" }, "-__v").populate("author", "name biography").lean();
         if (!post) return next({ status: 404, message: "پست مورد نظر یافت نشد" });
 
         const comments = await CommentModel.find({ post: id, isAccepted: 1 })
@@ -85,10 +85,13 @@ exports.getOne = async (req, res, next) => {
 };
 exports.getAllPublished = async (req, res, next) => {
     try {
-        const topics = await PostModel.find({ status: "published" }, "-__v").lean();
-        if (!topics.length) return next({ status: 404, message: "پستی یافت نشد." });
+        const posts = await PostModel.find({ status: "published" }, "-__v")
+            .populate("author", "name")
+            .populate("topicID")
+            .lean();
+        if (!posts.length) return next({ status: 404, message: "پستی یافت نشد." });
 
-        res.json(topics);
+        res.json(posts);
     } catch (error) {
         next(error);
     }
