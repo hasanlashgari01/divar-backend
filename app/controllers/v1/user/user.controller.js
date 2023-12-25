@@ -11,6 +11,15 @@ exports.getProfile = async (req, res, next) => {
     }
 };
 
+exports.getDetails = async (req, res, next) => {
+    try {
+        // res.status(201).json({ status: "ok", message: "اطلاعات شما آپدیت شد." });
+        res.send(req.user);
+    } catch (error) {
+        next(error);
+    }
+};
+
 exports.updateDetails = async (req, res, next) => {
     try {
         const validationResults = updateUserValidator(req.body);

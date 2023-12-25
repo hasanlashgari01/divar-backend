@@ -4,7 +4,9 @@ const isAdmin = require("../../../middlewares/isAdmin");
 
 const controller = require("../../../controllers/v1/admin/user.controller");
 
-router.route("/:id/ban").post(authMiddleware, isAdmin, controller.banUser);
-router.route("/:id/role").put(authMiddleware, isAdmin, controller.changeRole);
+router.use(authMiddleware, isAdmin);
+
+router.route("/ban/:id").post(controller.banUser);
+router.route("/role/:id").put(controller.changeRole);
 
 module.exports = { userAdminRouter: router };

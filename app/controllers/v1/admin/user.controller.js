@@ -28,7 +28,7 @@ exports.changeRole = async (req, res, next) => {
         const updatedUser = await UserModel.findByIdAndUpdate({ _id: id }, { role: newRole });
         if (!updatedUser) return next({ status: 404, message: "کاربر یافت نشد." });
 
-        res.json({ message: `نقش ${user.name} به ${(newRole === "USER" ? "کاربر" : "مدیر")} تغییر کرد.` });
+        res.json({ message: `نقش ${user.name} به ${newRole === "USER" ? "کاربر" : "مدیر"} تغییر کرد.` });
     } catch (error) {
         next(error);
     }
