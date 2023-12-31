@@ -10,11 +10,8 @@ exports.getOne = async (req, res, next) => {
         if (!topic) return next({ status: 404, message: "موضوع مورد نظر یافت نشد" });
         topicID = topic._id;
 
-        console.log(topicID);
-
         const posts = await PostModel.find({ topicID }).sort({ updatedAt: 1 }).populate("author");
         if (posts.length < 0) return next({ status: 404, message: "پستی وجود ندارد" });
-        console.log(posts);
 
         res.json({ topic, posts });
     } catch (error) {
