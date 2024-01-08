@@ -20,7 +20,7 @@ exports.getAll = async (req, res, next) => {
         const comments = await CommentModel.find({}, "-__v")
             .populate("post", "title")
             .populate("author", "username name")
-            .sort({ updatedAt: -1 })
+            .sort({ createdAt: -1 })
             .lean();
 
         if (!comments.length) return next({ status: 404, message: "کامنتی یافت نشد." });
