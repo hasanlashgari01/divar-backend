@@ -6,7 +6,7 @@ const controller = require("../../../controllers/v1/admin/user.controller");
 
 router.use(authMiddleware, isAdmin);
 
-router.route("/ban/:id").post(controller.banUser);
-router.route("/role/:id").put(controller.changeRole);
+router.route("/ban/:id").get(controller.banUser);
+router.route("/role/:id").get(controller.changeRole);
 
 module.exports = { userAdminRouter: router };

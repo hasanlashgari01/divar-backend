@@ -4,11 +4,16 @@ const { isValidObjectId } = require("mongoose");
 
 exports.banUser = async (req, res, next) => {
     try {
-        const mainUser = await UserModel.findOne({ _id: req.params.id });
+        const { id } = req.params;
+
+        const mainUser = await UserModel.findOne({ _id: id });
         const isBanned = await BanUserModel.findOne({ phone: mainUser.phone });
         if (isBanned) return next({ status: 409, message: "کاربر بن شده است." });
 
         const banUserResult = await BanUserModel.create({ phone: mainUser.phone });
+        if (!banUserResult) res.json({ message: "دوباره تلاش کنید." });
+
+        const removeUser = await UserModel.findByIdAndDelete({ _id: id });
 
         res.json({ message: "کاربر با موفقیت بن شد.." });
     } catch (error) {
