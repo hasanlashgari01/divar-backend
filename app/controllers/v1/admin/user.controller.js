@@ -1,6 +1,7 @@
 const { UserModel } = require("../../../models/user");
 const { BanUserModel } = require("../../../models/banUser");
 const { isValidObjectId } = require("mongoose");
+const { CommentModel } = require("../../../models/comment");
 
 exports.banUser = async (req, res, next) => {
     try {
@@ -10,10 +11,16 @@ exports.banUser = async (req, res, next) => {
         const isBanned = await BanUserModel.findOne({ phone: mainUser.phone });
         if (isBanned) return next({ status: 409, message: "کاربر بن شده است." });
 
+        const removeComments = await CommentModel.deleteMany({ author: id });
+        if (!removeComments) res.json({ message: "دوباره تلاش کنید." });
+
+        const removeUser = await UserModel.findByIdAndDelete({ _id: id });
+        if (!removeUser) res.json({ message: "دوباره تلاش کنید." });
+
         const banUserResult = await BanUserModel.create({ phone: mainUser.phone });
         if (!banUserResult) res.json({ message: "دوباره تلاش کنید." });
 
-        const removeUser = await UserModel.findByIdAndDelete({ _id: id });
+        console.log(removeComments);
 
         res.json({ message: "کاربر با موفقیت بن شد.." });
     } catch (error) {

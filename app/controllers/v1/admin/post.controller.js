@@ -2,15 +2,16 @@ const { PostModel } = require("../../../models/post");
 
 exports.getAll = async (req, res, next) => {
     try {
-        const topics = await PostModel.find({}, "-__v").lean();
+        const topics = await PostModel.find({}, "-__v").populate("author", "username name").lean();
 
         if (!topics.length) return next({ status: 404, message: "پستی یافت نشد." });
-
+        
         res.json(topics);
     } catch (error) {
         next(error);
     }
 };
+
 exports.publishedByAdmin = async (req, res, next) => {
     try {
         const publishedPost = await PostModel.findOneAndUpdate({ _id: req.params.id }, { status: "published" });
@@ -21,6 +22,7 @@ exports.publishedByAdmin = async (req, res, next) => {
         next(error);
     }
 };
+
 exports.draftedByAdmin = async (req, res, next) => {
     try {
         const draftedPost = await PostModel.findOneAndUpdate({ _id: req.params.id }, { status: "draft" });

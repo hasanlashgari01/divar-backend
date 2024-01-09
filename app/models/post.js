@@ -24,13 +24,14 @@ const schema = new mongoose.Schema(
             default: "draft",
         },
         topicID: {
-            type: mongoose.Schema.Types.ObjectId,
+            type: mongoose.Types.ObjectId,
             ref: "Topic",
             required: true,
         },
         author: {
-            type: mongoose.Schema.Types.ObjectId,
+            type: mongoose.Types.ObjectId,
             ref: "User",
+            required: true,
         },
     },
     { timestamps: true }
