@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const { UserModel } = require("../../../models/user");
-const updateUserValidator = require("../../../validators/user/update");
 const { PostModel } = require("../../../models/post");
+const { nameCheck } = require("../../../validators/user/update");
 
 exports.getProfile = async (req, res, next) => {
     try {
@@ -13,7 +13,6 @@ exports.getProfile = async (req, res, next) => {
 
 exports.getDetails = async (req, res, next) => {
     try {
-        // res.status(201).json({ status: "ok", message: "اطلاعات شما آپدیت شد." });
         res.send(req.user);
     } catch (error) {
         next(error);
@@ -63,4 +62,18 @@ exports.viewProfile = async (req, res, next) => {
 
         res.json({ findUser, postsOfUser, publishedPostsOfUser });
     } catch (error) {}
+};
+
+exports.updateName = async (req, res, next) => {
+    try {
+        const validationResults = nameCheck(req.body);
+        if (validationResults !== true) return next({ status: 422, message: validationResults });
+
+        const { _id, name } = req.body;
+        const user = await UserModel.findOneAndUpdate({ _id }, { name });
+
+        res.status(201).json({ status: "ok", message: "اطلاعات شما آپدیت شد." });
+    } catch (error) {
+        next(error);
+    }
 };

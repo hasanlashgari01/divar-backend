@@ -49,6 +49,16 @@ const schema = new mongoose.Schema(
         linkedin: {
             type: String,
         },
+        otp: {
+            code: {
+                type: String,
+                required: true,
+            },
+            expiresIn: {
+                type: String,
+                required: true,
+            },
+        },
     },
     { timestamps: true }
 );
