@@ -1,6 +1,7 @@
+const crypto = require("crypto");
+const nodemailer = require("nodemailer");
 const { isValidObjectId } = require("mongoose");
 const { UserModel } = require("../models/user");
-const crypto = require("crypto");
 
 exports.checkExist = (identifier, next) => {
     if (!isValidObjectId(identifier)) return next({ status: 404, message: "شناسه مورد نظر یافت نشد." });
@@ -14,17 +15,38 @@ exports.saveOtpToDB = async userId => {
     };
 
     const user = await UserModel.findByIdAndUpdate({ _id: userId }, { otp });
+
+    return otp.code;
 };
 
-exports.verifiedOtp = async userId => {
+exports.verifiedOtp = async (code, userId) => {
     const now = new Date().getTime();
-    const code = "524880";
-    const user = await UserModel.findById({ _id: "652173368b66c7ad1d5ce5be" }).lean();
+    // const code = "524880";
+    const user = await UserModel.findById({ _id: userId }).lean();
 
     if (user?.otp?.expiresIn < now) return "expiresIn";
     if (user?.otp?.code !== code) return "code";
 
     return true;
+};
+
+exports.sendEmail = async (email, code) => {
+    const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+            user: "hasanlashgari01@gmail.com",
+            pass: "kpvv ctuq uubs byka",
+        },
+    });
+
+    const mailOptions = {
+        from: "hasanlashgari01@gmail.com",
+        to: email,
+        subject: "کد ورود شما به ویرگول",
+        text: String(code),
+    };
+
+    transporter.sendMail(mailOptions).catch(err => err);
 };
 
 // ! // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1MjE1MzY4YjZjODI4ZTdhNDNkYjFjYyIsImlhdCI6MTY5NjY4MzA2NiwiZXhwIjoxNjk5Mjc1MDY2fQ.3cwDjlELVRS29V_kLTPu4WVj8qs4B2Qce8DIEZZczxk
