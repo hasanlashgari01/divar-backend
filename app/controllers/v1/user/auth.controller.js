@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { UserModel } = require("../../../models/user");
 const { BanUserModel } = require("../../../models/banUser");
-const { saveOtpToDB, verifiedOtp, sendEmail } = require("../../../utils/funcs");
+const { saveOtpToDB, verifiedOtp } = require("../../../utils/funcs");
 
 const registerValidator = require("../../../validators/user/register");
 
@@ -56,7 +56,9 @@ exports.accessLogin = async (req, res, next) => {
 
     userInfo = user;
 
-    sendEmail(identifier, code);
+    console.log(code);
+
+    // sendEmail(identifier, code);
 
     res.status(200).json({ message: "کد ارسال شد." });
 };

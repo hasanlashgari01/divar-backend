@@ -16,11 +16,6 @@ const schema = {
     $$strict: true,
 };
 
-const nameSchema = {
-    name: { type: "string", min: 3, max: 255, optional: true },
-};
-
 const check = v.compile(schema);
-const nameCheck = v.compile(nameSchema);
 
-module.exports = { nameCheck };
+module.exports = check;

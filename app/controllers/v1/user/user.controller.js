@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const { UserModel } = require("../../../models/user");
 const { PostModel } = require("../../../models/post");
-const { nameCheck } = require("../../../validators/user/update");
+const updateUserValidator = require("../../../validators/user/update");
 
 exports.getProfile = async (req, res, next) => {
     try {
@@ -22,17 +22,11 @@ exports.getDetails = async (req, res, next) => {
 exports.updateDetails = async (req, res, next) => {
     try {
         const validationResults = updateUserValidator(req.body);
-
         if (validationResults !== true) return next({ status: 422, message: validationResults });
 
-        const { name, password, biography, gender, telegram, twitter, linkedin } = req.body;
-
         let hashedPassword;
-
-        if (password) {
-            const hashedPassword = await bcrypt.hash(password, 12);
-            return hashedPassword;
-        }
+        const { name, password, biography, gender, telegram, twitter, linkedin } = req.body;
+        if (password) hashedPassword = await bcrypt.hash(password, 12);
 
         const user = await UserModel.findOneAndUpdate(
             { _id: req.user._id },
@@ -62,18 +56,4 @@ exports.viewProfile = async (req, res, next) => {
 
         res.json({ findUser, postsOfUser, publishedPostsOfUser });
     } catch (error) {}
-};
-
-exports.updateName = async (req, res, next) => {
-    try {
-        const validationResults = nameCheck(req.body);
-        if (validationResults !== true) return next({ status: 422, message: validationResults });
-
-        const { _id, name } = req.body;
-        const user = await UserModel.findOneAndUpdate({ _id }, { name });
-
-        res.status(201).json({ status: "ok", message: "اطلاعات شما آپدیت شد." });
-    } catch (error) {
-        next(error);
-    }
 };
