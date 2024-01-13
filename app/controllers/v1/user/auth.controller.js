@@ -6,8 +6,6 @@ const { saveOtpToDB, verifiedOtp } = require("../../../utils/funcs");
 
 const registerValidator = require("../../../validators/user/register");
 
-let userInfo = {};
-
 exports.register = async (req, res, next) => {
     const validationResults = registerValidator(req.body);
     if (validationResults !== true) return next({ status: 422, message: validationResults });
@@ -43,7 +41,7 @@ exports.accessLogin = async (req, res, next) => {
     const { identifier, password } = req.body;
 
     // $or: [{ username: identifier }, { email: identifier }, { phone: identifier }],
-    const user = await UserModel.findOne({ email: identifier });
+    const user = await UserModel.findOne({ email: identifier, password });
     if (!user) return next({ message: "کاربر یافت نشد." });
 
     const isUserBan = await BanUserModel.findOne({ phone: user.phone });
@@ -65,18 +63,16 @@ exports.accessLogin = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
     try {
-        const { code } = req.body;
-        const info = await verifiedOtp(code, userInfo._id);
+        const { identifier, code } = req.body;
+        const user = await verifiedOtp(identifier, code);
+        if (!user) return next({ message: "کاربر یافت نشد." });
 
-        if (info == "code") {
-            res.json({ message: "کد صحیح نیست دوباره تلاش کنید." });
-        } else if (info == "expiresIn") {
-            res.json({ message: "زمان کد به اتمام رسیده است." });
-        }
+        if (user == "code") res.status(500).json({ status: 500, message: "کد صحیح نیست." });
+        if (user == "expiresIn") res.status(500).json({ status: 500, message: "زمان کد به اتمام رسیده است." });
 
-        const accessToken = jwt.sign({ id: userInfo._id }, process.env.JWT_SECRET, { expiresIn: "30 days" });
+        const accessToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "30 days" });
 
-        res.json({ accessToken });
+        return res.status(200).json({ accessToken });
     } catch (error) {
         next(error);
     }

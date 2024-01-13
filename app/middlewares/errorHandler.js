@@ -1,5 +1,5 @@
 exports.notFoundError = (req, res, next) => {
-    res.status(404).json({
+    return res.status(404).json({
         status: 404,
         message: "صفحه یافت نشد.",
     });
@@ -10,7 +10,7 @@ exports.errorHandler = (err, req, res, next) => {
     const success = err.success ?? false;
     const message = err?.message ?? "خطایی از سمت سرور داخلی رخ داده است.";
 
-    res.status(status).json({
+    return res.status(status).send({
         status: status,
         success,
         message,

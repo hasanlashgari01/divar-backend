@@ -19,6 +19,6 @@ module.exports = async (req, res, next) => {
 
         next();
     } catch (error) {
-        next(error);
+        next(error)
     }
 };

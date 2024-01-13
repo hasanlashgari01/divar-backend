@@ -19,15 +19,14 @@ exports.saveOtpToDB = async userId => {
     return otp.code;
 };
 
-exports.verifiedOtp = async (code, userId) => {
+exports.verifiedOtp = async (identifier, code) => {
     const now = new Date().getTime();
-    // const code = "524880";
-    const user = await UserModel.findById({ _id: userId }).lean();
+    const user = await UserModel.findOne({ email: identifier }).lean();
 
     if (user?.otp?.expiresIn < now) return "expiresIn";
     if (user?.otp?.code !== code) return "code";
 
-    return true;
+    return user;
 };
 
 exports.sendEmail = async (email, code) => {
