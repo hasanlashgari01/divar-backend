@@ -33,8 +33,10 @@ const schema = new mongoose.Schema(
         },
         gender: {
             type: String,
-            enum: ["MAN", "WOMAN"],
+            enum: ["MAN", "WOMAN", "OTHER"],
         },
+        themeMode: { type: String, enum: ["DARK", "LIGHT", "AUTO"] },
+        themeStatus: { type: String, default: "1" },
         role: {
             type: String,
             enum: ["ADMIN", "USER"],
@@ -52,11 +54,9 @@ const schema = new mongoose.Schema(
         otp: {
             code: {
                 type: String,
-                required: true,
             },
             expiresIn: {
                 type: String,
-                required: true,
             },
         },
     },

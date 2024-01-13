@@ -25,12 +25,24 @@ exports.updateDetails = async (req, res, next) => {
         if (validationResults !== true) return next({ status: 422, message: validationResults });
 
         let hashedPassword;
-        const { name, password, biography, gender, telegram, twitter, linkedin } = req.body;
+        const { username, name, password, biography, gender, telegram, twitter, linkedin, themeMode, themeStatus } =
+            req.body;
         if (password) hashedPassword = await bcrypt.hash(password, 12);
 
         const user = await UserModel.findOneAndUpdate(
             { _id: req.user._id },
-            { name, password: hashedPassword, biography, gender, telegram, twitter, linkedin }
+            {
+                username,
+                name,
+                password: hashedPassword,
+                biography,
+                gender,
+                telegram,
+                twitter,
+                linkedin,
+                themeMode,
+                themeStatus,
+            }
         );
 
         const userObject = user.toObject();

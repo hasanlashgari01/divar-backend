@@ -7,7 +7,7 @@ exports.checkExist = (identifier, next) => {
     if (!isValidObjectId(identifier)) return next({ status: 404, message: "شناسه مورد نظر یافت نشد." });
 };
 
-exports.saveOtpToDB = async userId => {
+exports.sendOtp = async userId => {
     const now = new Date().getTime();
     const otp = {
         code: crypto.randomInt(100000, 999999),
@@ -17,16 +17,6 @@ exports.saveOtpToDB = async userId => {
     const user = await UserModel.findByIdAndUpdate({ _id: userId }, { otp });
 
     return otp.code;
-};
-
-exports.verifiedOtp = async (identifier, code) => {
-    const now = new Date().getTime();
-    const user = await UserModel.findOne({ email: identifier }).lean();
-
-    if (user?.otp?.expiresIn < now) return "expiresIn";
-    if (user?.otp?.code !== code) return "code";
-
-    return user;
 };
 
 exports.sendEmail = async (email, code) => {
